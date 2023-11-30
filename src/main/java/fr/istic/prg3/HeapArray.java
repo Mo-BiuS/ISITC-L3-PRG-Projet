@@ -29,31 +29,28 @@ public class HeapArray implements Heap {
 		int left = indexLeft(index);
 		int right = indexRight(index);
 
-		if(!isIn(left)) {
-			if(left >= values.size()){
-				for (int i = values.size(); i < left+1; i++) {
-					values.add(i,null);
-				}
-			}
-			values.set(left, newValue);
-			siftUp(left);
-		}else if (!isIn(right)) {
-			if(right >= values.size()){
-				for (int i = values.size(); i < right+1; i++) {
-					values.add(i,null);
-				}
-			}
-			values.set(right, newValue);
-			siftUp(right);
+		if(!isIn(left) || !isIn(right)) {
+			values.add(newValue);
+			siftUp(values.size()-1);
 		}else{
-			if(getNumberOfDescendants(right) > getNumberOfDescendants(left))
-				addValue(left,newValue);
-			else
-				addValue(right,newValue);
+			int nbDescLeft = getNumberOfDescendants(left);
+			int nbDescRight = getNumberOfDescendants(right);
+			if (getLevels(nbDescLeft) == getLevels(nbDescLeft + 1)) {
+				addValue(left, newValue);
+			}
+			else {
+				if (nbDescLeft > nbDescRight)
+					addValue(right, newValue);
+				else
+					addValue(left, newValue);
+			}
 		}
 
 	}
 
+	protected static int getLevels(int n) {
+		return (int)(Math.log(n + 1) / Math.log(2));
+	}
 
 	public int getMax(){
 		return values.get(0);
@@ -66,16 +63,8 @@ public class HeapArray implements Heap {
 		if(values.size() > 1) {
 			Integer last = values.get(values.size()-1);
 			values.set(0,  last);
-
-			do {
-				values.remove(values.size()-1);
-				last = values.get(values.size()-1);
-			} while (last == null);
-
-		}else {
-			values.remove(0);
 		}
-
+		values.remove(values.size()-1);
 		siftDown(0);
 
 		return rep;
@@ -105,7 +94,7 @@ public class HeapArray implements Heap {
 		return (position-1)/2;
 	}
 	protected boolean isIn(int position) {
-		return values.size() > position && values.get(position) != null;
+		return values.size() > position;
 	}
 	private int getNumberOfDescendants(int position) {
 		if (isIn(position))

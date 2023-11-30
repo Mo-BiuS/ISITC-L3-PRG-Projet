@@ -42,10 +42,15 @@ public class HeapTree extends BinaryTreeAlmostComplete implements Heap {
 			this.updateNumberOfDescendants();
 		}
 		else {
-			if(this.right.nbDescendants > this.left.nbDescendants)
+			if (getLevels(this.left.nbDescendants) == getLevels(this.left.nbDescendants + 1)) {
 				this.left.addValue(value);
-			else
-				this.right.addValue(value);
+			}
+			else {
+				if (this.left.nbDescendants > this.right.nbDescendants)
+					this.right.addValue(value);
+				else
+					this.left.addValue(value);
+			}
 		}
 	}
 	
